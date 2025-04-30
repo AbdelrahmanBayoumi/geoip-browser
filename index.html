@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IP Lookup</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: { primary: "#1E2A38", accent: "#A78BFA" },
+          },
+        },
+      };
+    </script>
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" href="icon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="icon.ico" />
+  </head>
+
+  <body
+    class="bg-primary text-gray-100 min-h-screen flex items-center justify-center p-4"
+  >
+    <div class="w-full max-w-md">
+      <h1 class="text-3xl font-bold mb-6 text-center text-accent">
+        🌐 IP Lookup
+      </h1>
+
+      <div class="flex mb-4">
+        <input
+          id="ipInput"
+          type="text"
+          placeholder="Enter IP address (or leave blank for your IP)"
+          class="flex-grow px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none"
+        />
+        <button
+          id="lookupBtn"
+          class="px-4 py-2 bg-accent hover:bg-indigo-600 rounded-r-lg transition"
+        >
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+
+      <pre
+        id="result"
+        class="bg-gray-800 p-4 rounded-lg whitespace-pre-wrap break-all"
+      >
+Enter an IP above and hit “Lookup”.</pre
+      >
+    </div>
+
+    <script>
+      const btn = document.getElementById("lookupBtn");
+      const input = document.getElementById("ipInput");
+      const result = document.getElementById("result");
+
+      async function lookup(ip) {
+        const url = ip
+          ? `https://ipapi.co/${encodeURIComponent(ip)}/json/`
+          : `https://ipapi.co/json/`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+      }
+
+      btn.addEventListener("click", async () => {
+        const ip = input.value.trim();
+        result.textContent = "Loading…";
+        try {
+          const data = await lookup(ip);
+          result.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          console.error(err);
+          result.textContent = `Error: ${err.message}`;
+        }
+      });
+
+      input.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") btn.click();
+      });
+    </script>
+  </body>
+</html>
